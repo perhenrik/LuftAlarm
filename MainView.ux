@@ -1,0 +1,58 @@
+<App Theme="Basic" Background="#eee">
+        <JavaScript>
+                    function getData() {
+                        fetch('http://nr38.cloudapp.net:3000/air')
+                            .then(function(response) {
+                                var list = response.json();
+                                return list; 
+                            })
+                            .then(function(responseObject) { 
+                                data.value = responseObject; 
+                                data.value.sites.sort(function(a,b) {
+                                    if (a.name < b.name)
+                                        return -1;
+                                    else if (a.name > b.name)
+                                        return 1;
+                                    else 
+                                        return 0;
+                                });
+                            });                        
+
+                    }
+                    var Observable = require("FuseJS/Observable");
+                    var data = Observable();
+
+                    var Timer = require('FuseJS/Timer');
+                    var timer = Timer.create(function(){
+                        getData();
+                    }, 300000, true);
+
+                    getData();
+
+                    module.exports = {
+                        data: data
+                    };
+        </JavaScript>
+	    <DockPanel>
+        <StatusBarBackground Dock="Top" />
+        <BottomBarBackground Dock="Bottom" />
+        <ScrollView>
+            <Grid ColumnCount="2">
+                <Each Items="{data.sites}">
+                    <DockPanel Height="120" Margin="10,10">
+                        <Panel DockPanel.Dock="Top" Margin="10" Height="30">
+                            <Rectangle Layer="Background" CornerRadius="10" Fill="#fff" />
+                            <Text Value="{name}" TextAlignment="Center" Alignment="Center" />
+                        </Panel>
+                        <Panel DockPanel.Dock="Top" Margin="10" Height="30">
+                            <Rectangle Layer="Background" CornerRadius="10" Fill="{colorcode}" />
+                            <Text Value="{pollution}" TextAlignment="Center" Alignment="Center" />
+                        </Panel>
+                        <Rectangle Layer="Background" CornerRadius="10" Fill="{colorcode}" Opacity="0.4" Alignment="Default"><DropShadow /></Rectangle>
+                    </DockPanel>
+                </Each>
+            </Grid>
+        </ScrollView>
+    </DockPanel>
+</App>
+
